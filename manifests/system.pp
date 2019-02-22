@@ -67,11 +67,25 @@ class rvm::system(
 
   }
   else {
+    exec { 'get rvm installer script':
+      path        => ['/bin','/usr/bin','/usr/sbin','/usr/local/bin'],
+      command     => 'curl -fsSLk https://get.rvm.io -o /tmp/installer.sh',
+      creates     => '/tmp/installer.sh',
+      environment => concat($proxy_environment, ["HOME=${home}"]),
+    }
+
+    file { '/tmp/rvm_installer.sh':
+      mode    => '0755',
+      require => Exec['get rvm installer script'],
+    }
+
     exec { 'system-rvm':
-      path        => '/usr/bin:/usr/sbin:/bin:/usr/local/bin',
-      command     => "bash -s export https_proxy && curl -fsSL https://get.rvm.io | bash -s -- --version ${actual_version}",
+      path        => ['/bin','/usr/bin','/usr/sbin','/usr/local/bin'],
+      command     => "/tmp/installer.sh --version ${actual_version}",
+      logoutput   => true,
       creates     => '/usr/local/rvm/bin/rvm',
       environment => $environment,
+      requre      => File['/tmp/rvm_installer.sh'],
     }
   }
 
