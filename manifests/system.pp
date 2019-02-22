@@ -85,7 +85,7 @@ class rvm::system(
       logoutput   => true,
       creates     => '/usr/local/rvm/bin/rvm',
       environment => $environment,
-      requre      => File['/tmp/rvm_installer.sh'],
+      require     => File['/tmp/rvm_installer.sh'],
     }
   }
 
