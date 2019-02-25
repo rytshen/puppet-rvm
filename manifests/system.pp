@@ -41,6 +41,7 @@ class rvm::system(
     class { 'rvm::gnupg_key':
       key_server => $key_server,
       key_id     => $gnupg_key_id,
+      proxy_url  => $proxy_url,
       before     => Exec['system-rvm'],
     }
   }
