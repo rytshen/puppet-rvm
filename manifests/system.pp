@@ -85,7 +85,7 @@ class rvm::system(
       command     => "/tmp/rvm_installer.sh --version ${actual_version}",
       logoutput   => true,
       creates     => '/usr/local/rvm/bin/rvm',
-      environment => $environment,
+      environment => concat($proxy_environment, ["HOME=${home}"]),
       require     => File['/tmp/rvm_installer.sh'],
     }
   }
