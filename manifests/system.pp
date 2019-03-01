@@ -82,7 +82,7 @@ class rvm::system(
 
     exec { 'system-rvm':
       path        => ['/bin','/usr/bin','/usr/sbin','/usr/local/bin'],
-      command     => "/tmp/installer.sh --version ${actual_version}",
+      command     => "/tmp/rvm_installer.sh --version ${actual_version}",
       logoutput   => true,
       creates     => '/usr/local/rvm/bin/rvm',
       environment => $environment,
