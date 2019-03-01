@@ -70,8 +70,8 @@ class rvm::system(
   else {
     exec { 'get rvm installer script':
       path        => ['/bin','/usr/bin','/usr/sbin','/usr/local/bin'],
-      command     => 'curl -fsSLk https://get.rvm.io -o /tmp/installer.sh',
-      creates     => '/tmp/installer.sh',
+      command     => 'curl -fsSLk https://get.rvm.io -o /tmp/rvm_installer.sh',
+      creates     => '/tmp/rvm_installer.sh',
       environment => concat($proxy_environment, ["HOME=${home}"]),
     }
 
