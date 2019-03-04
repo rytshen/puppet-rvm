@@ -45,6 +45,7 @@ class rvm::system(
       before     => Exec['system-rvm'],
     }
   }
+  notify { "Debug rvm::system ${rvm::gnupg_key}":}
 
   if $install_from {
 
