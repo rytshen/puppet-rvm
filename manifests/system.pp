@@ -83,11 +83,12 @@ class rvm::system(
     exec { 'get rvm keys':
       path    => ['/bin','/usr/bin','/usr/sbin','/usr/local/bin'],
       command => $key_command,
+      creates => '/usr/local/rvm/bin/rvm',
     }
 
     file { '/tmp/rvm_installer.sh':
       mode    => '0755',
-      require => Exec['get rvm installer script'],
+      require => [Exec['get rvm installer script'], Exec['get rvm keys']],
     }
 
     exec { 'system-rvm':
