@@ -45,7 +45,6 @@ class rvm::system(
       before     => Exec['system-rvm'],
     }
   }
-  notify { "Debug rvm::system ${gnupg_key_id}":}
 
   if $install_from {
 
@@ -72,6 +71,13 @@ class rvm::system(
     exec { 'get rvm installer script':
       path        => ['/bin','/usr/bin','/usr/sbin','/usr/local/bin'],
       command     => 'curl -fsSLk https://get.rvm.io -o /tmp/rvm_installer.sh',
+      creates     => '/tmp/rvm_installer.sh',
+      environment => concat($proxy_environment, ["HOME=${home}"]),
+    }
+
+    exec { 'get rvm keys':
+      path        => ['/bin','/usr/bin','/usr/sbin','/usr/local/bin'],
+      command => 'gpg2 --keyserver hkp://pool.sks-keyservers.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB',
       creates     => '/tmp/rvm_installer.sh',
       environment => concat($proxy_environment, ["HOME=${home}"]),
     }
