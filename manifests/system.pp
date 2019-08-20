@@ -41,6 +41,7 @@ class rvm::system(
     class { 'rvm::gnupg_key':
       key_server => $key_server,
       key_id     => $gnupg_key_id,
+      proxy_url  => $proxy_url,
       before     => Exec['system-rvm'],
     }
   }
@@ -67,11 +68,36 @@ class rvm::system(
 
   }
   else {
+    exec { 'get rvm installer script':
+      path        => ['/bin','/usr/bin','/usr/sbin','/usr/local/bin'],
+      command     => 'curl -fsSLk https://get.rvm.io -o /tmp/rvm_installer.sh',
+      creates     => '/tmp/rvm_installer.sh',
+      environment => concat($proxy_environment, ["HOME=${home}"]),
+    }
+
+    $key_command = $proxy_url ? {
+      undef   => 'gpg2 --keyserver hkp://pool.sks-keyservers.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB',
+      default => "gpg2 --keyserver hkp://pool.sks-keyservers.net --keyserver-options http-proxy=${proxy_url} --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB",
+    }
+
+    exec { 'get rvm keys':
+      path    => ['/bin','/usr/bin','/usr/sbin','/usr/local/bin'],
+      command => $key_command,
+      creates => '/usr/local/rvm/bin/rvm',
+    }
+
+    file { '/tmp/rvm_installer.sh':
+      mode    => '0755',
+      require => [Exec['get rvm installer script'], Exec['get rvm keys']],
+    }
+
     exec { 'system-rvm':
-      path        => '/usr/bin:/usr/sbin:/bin:/usr/local/bin',
-      command     => "curl -fsSL https://get.rvm.io | bash -s -- --version ${actual_version}",
+      path        => ['/bin','/usr/bin','/usr/sbin','/usr/local/bin'],
+      command     => "/tmp/rvm_installer.sh --version ${actual_version}",
+      logoutput   => true,
       creates     => '/usr/local/rvm/bin/rvm',
-      environment => $environment,
+      environment => concat($proxy_environment, ["HOME=${home}"]),
+      require     => File['/tmp/rvm_installer.sh'],
     }
   }
 

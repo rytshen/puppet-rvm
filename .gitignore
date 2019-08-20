@@ -1,6 +1,8 @@
 # This file is managed centrally by modulesync
 #   https://github.com/maestrodev/puppet-modulesync
 
+Gemfile.lock
+
 ## MAC OS
 .DS_Store
 

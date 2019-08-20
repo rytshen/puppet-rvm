@@ -2,6 +2,7 @@
 
 class rvm::gnupg_key(
   $key_id = $rvm::params::gnupg_key_id,
+  $proxy_url = $rvm::params::proxy_url,
   $key_server = $rvm::params::key_server) inherits rvm::params {
 
   gnupg_key { "rvm_${key_id}":
@@ -10,6 +11,7 @@ class rvm::gnupg_key(
     user       => 'root',
     key_server => $key_server,
     key_type   => public,
+    proxy      => $proxy_url,
   }
 
 }
